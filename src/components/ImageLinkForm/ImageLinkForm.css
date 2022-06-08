@@ -50,3 +50,8 @@
 .form-wrapper {
   text-align: center;
 }
+
+.form button,
+.form input {
+  border: none;
+}
