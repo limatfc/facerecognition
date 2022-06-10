@@ -1,7 +1,31 @@
-export default function SignIn({ onRouteChange }) {
-  const onSubmitHandler = (event) => {
+import { useState } from "react";
+
+export default function SignIn({ onRouteChange, loadUser }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const onSubmitHandler = async (event) => {
     event.preventDefault();
-    onRouteChange("home");
+    const user = await getData();
+    if (user.email !== undefined) {
+      loadUser(user);
+      onRouteChange("home");
+    } else {
+      setError(
+        "Oops, looks like this email and password combination is not working. Please try again."
+      );
+    }
+  };
+
+  const getData = async () => {
+    const response = await fetch("http://localhost:4000/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await response.json();
+    return data;
   };
 
   return (
@@ -11,6 +35,7 @@ export default function SignIn({ onRouteChange }) {
           <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
             <legend className="f1 fw6 ph0 mh0">Sign In</legend>
             <div className="mt3">
+              {error !== "" && <p>{error}</p>}
               <label className="db fw6 lh-copy f6">
                 Email
                 <input
@@ -18,6 +43,7 @@ export default function SignIn({ onRouteChange }) {
                   type="email"
                   name="email-address"
                   id="email-address"
+                  onChange={(event) => setEmail(event.target.value)}
                 />
               </label>
             </div>
@@ -29,6 +55,7 @@ export default function SignIn({ onRouteChange }) {
                   type="password"
                   name="password"
                   id="password"
+                  onChange={(event) => setPassword(event.target.value)}
                 />
               </label>
             </div>

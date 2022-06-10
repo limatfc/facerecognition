@@ -1,7 +1,33 @@
-export default function Register({ onRouteChange }) {
-  const onSubmitHandler = (event) => {
+import { useState } from "react";
+
+export default function Register({ onRouteChange, loadUser }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const onSubmitHandler = async (event) => {
     event.preventDefault();
     onRouteChange("home");
+    const user = await getData();
+    if (user) {
+      loadUser(user);
+      onRouteChange("home");
+    } else {
+      setError(
+        "Oops, looks like we were unable to create a new user. Please try again later."
+      );
+    }
+  };
+
+  const getData = async () => {
+    const response = await fetch("http://localhost:4000/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, name }),
+    });
+    const data = await response.json();
+    return data;
   };
 
   return (
@@ -11,9 +37,11 @@ export default function Register({ onRouteChange }) {
           <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
             <legend className="f1 fw6 ph0 mh0">Register</legend>
             <div className="mt3">
+              {error !== "" && <p>{error}</p>}
               <label className="db fw6 lh-copy f6">
                 Name
                 <input
+                  onChange={(event) => setName(event.target.value)}
                   className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                   type="text"
                 />
@@ -21,8 +49,9 @@ export default function Register({ onRouteChange }) {
             </div>
             <div className="mt3">
               <label className="db fw6 lh-copy f6">
-                Name
+                Email
                 <input
+                  onChange={(event) => setEmail(event.target.value)}
                   className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                   type="email"
                 />
@@ -32,6 +61,7 @@ export default function Register({ onRouteChange }) {
               <label className="db fw6 lh-copy f6">
                 Password
                 <input
+                  onChange={(event) => setPassword(event.target.value)}
                   className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                   type="password"
                 />

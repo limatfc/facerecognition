@@ -14,9 +14,14 @@ function App() {
   const [imageURL, setImageURL] = useState("");
   const [box, setBox] = useState({});
   const [route, setRoute] = useState("signin");
+  const [user, setUser] = useState({});
 
   const onInputChange = (event) => {
     setImageURL(event.target.value);
+  };
+
+  const loadUser = (user) => {
+    setUser(user);
   };
 
   const calculateFaceLocation = (data) => {
@@ -35,19 +40,29 @@ function App() {
     };
   };
 
-  const displayFaceBox = (box) => {
-    setBox(box);
-  };
-
-  const onButtonSubmit = () => {
+  const onPictureSubmit = () => {
     let app = new Clarifai.App({
       apiKey: "1f15359cc4334c08b091a3baf86a61b4",
     });
 
     app.models
       .predict(Clarifai.FACE_DETECT_MODEL, imageURL)
-      .then((response) => displayFaceBox(calculateFaceLocation(response)))
-      .catch((err) => console.log(err));
+      .then((response) => {
+        if (response) {
+          fetch("http://localhost:4000/image", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id: user.id,
+            }),
+          })
+            .then((response) => response.json())
+            .then((count) => setUser((prev) => ({ ...prev, entries: count })));
+        }
+        setBox(calculateFaceLocation(response)).catch((err) =>
+          console.log(err)
+        );
+      });
   };
 
   return (
@@ -57,17 +72,17 @@ function App() {
       {route === "home" ? (
         <div>
           <Logo />
-          <Rank />
+          <Rank user={user} />
           <ImageLinkForm
             onInputChange={onInputChange}
-            onButtonSubmit={onButtonSubmit}
+            onPictureSubmit={onPictureSubmit}
           />
           <FaceRecognition box={box} imageURL={imageURL} />
         </div>
       ) : route === "signin" ? (
-        <SignIn onRouteChange={setRoute} />
+        <SignIn loadUser={loadUser} onRouteChange={setRoute} />
       ) : (
-        <Register onRouteChange={setRoute} />
+        <Register onRouteChange={setRoute} loadUser={loadUser} />
       )}
     </div>
   );
