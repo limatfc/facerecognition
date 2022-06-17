@@ -8,9 +8,8 @@ export default function Register({ onRouteChange, loadUser }) {
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
-    onRouteChange("home");
     const user = await getData();
-    if (user) {
+    if (user.id !== undefined) {
       loadUser(user);
       onRouteChange("home");
     } else {

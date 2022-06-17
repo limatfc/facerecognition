@@ -20,7 +20,7 @@ export default function Particle() {
         fpsLimit: 120,
         particles: {
           number: {
-            value: 100,
+            value: 150,
           },
           color: {
             value: "black",
