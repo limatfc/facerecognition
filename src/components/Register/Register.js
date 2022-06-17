@@ -20,11 +20,14 @@ export default function Register({ onRouteChange, loadUser }) {
   };
 
   const getData = async () => {
-    const response = await fetch("http://localhost:4000/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, name }),
-    });
+    const response = await fetch(
+      "https://dry-anchorage-23432.herokuapp.com/register",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name }),
+      }
+    );
     const data = await response.json();
     return data;
   };

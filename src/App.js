@@ -26,7 +26,7 @@ function App() {
   const onRouteChange = (route) => {
     if (route !== "home") {
       setImageURL("");
-      setBox({});
+      setBox([]);
       setUser({});
     }
     setRoute(route);
@@ -74,7 +74,7 @@ function App() {
 
   const onPictureSubmit = () => {
     if (imageURL !== "") {
-      fetch("http://localhost:4000/imageurl", {
+      fetch("https://dry-anchorage-23432.herokuapp.com/imageurl", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageURL }),
@@ -82,7 +82,7 @@ function App() {
         .then((response) => response.json())
         .then((response) => {
           if (response) {
-            fetch("http://localhost:4000/image", {
+            fetch("https://dry-anchorage-23432.herokuapp.com/image", {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
